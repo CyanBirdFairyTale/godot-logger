@@ -333,7 +333,7 @@ var default_logfile_path = "user://%s.log" % ProjectSettings.get_setting("applic
 var default_configfile_path = "user://%s.cfg" % PLUGIN_NAME
 
 # e.g. "[INFO] [main] The young alpaca started growing a goatie."
-var output_format = "[{TIME}] [{LVL}] [{MOD}]{ERR_MSG} {MSG}"
+var output_format = "[{TIME}] {MOD}/{LVL}: {MSG} {ERR_MSG}"
 # Example with all supported placeholders: "YYYY.MM.DD hh.mm.ss.SSS"
 # would output e.g.: "2020.10.09 12:10:47.034".
 var time_format = "hh:mm:ss"
@@ -587,8 +587,30 @@ func get_formatted_datetime():
 	return result
 
 
+'''
+## Original
 func format(template, level, module, message, error_code = -1):
 	var output = template
+	output = output.replace(FORMAT_IDS.level, LEVELS[level])
+	output = output.replace(FORMAT_IDS.module, module)
+	output = output.replace(FORMAT_IDS.message, str(message))
+	output = output.replace(FORMAT_IDS.time, get_formatted_datetime())
+
+	# Error message substitution
+	var error_message = ERROR_MESSAGES.get(error_code)
+	if error_message != null:
+		output = output.replace(FORMAT_IDS.error_message, " " + error_message)
+	else:
+		output = output.replace(FORMAT_IDS.error_message, "")
+
+	return output
+'''
+
+# Copyright 2024 by char46
+# This function is developed by char46 and is released under CC-BY-SA 4.0 International
+func format(template, level, module, message, error_code = -1):
+	var output = template
+	var LEVELS = ['V', 'D', 'I', 'W', 'E']
 	output = output.replace(FORMAT_IDS.level, LEVELS[level])
 	output = output.replace(FORMAT_IDS.module, module)
 	output = output.replace(FORMAT_IDS.message, str(message))
